@@ -27,7 +27,7 @@ app.get("/notes/:id", (req, res) => {
 });
 
 app.post("/notes", (req, res) => {
-  const { text } = req.body;
+  const { text, urgent } = req.body;
 
   if (!text)
     return res.send({ erro: "O campo text é obrigatório" });
@@ -37,6 +37,7 @@ app.post("/notes", (req, res) => {
   const note = {
     id,
     date: new Date(),
+    urgent,
     text
   };
 
@@ -63,7 +64,7 @@ app.delete("/notes/:id", (req, res) => {
 
 app.put("/notes/:id", (req, res) => {
   const { id } = req.params;
-  const { text } = req.body;
+  const { text, urgent } = req.body;
 
   if (!text)
     return res.send({ erro: "O campo text é obrigatório" });
@@ -73,14 +74,13 @@ app.put("/notes/:id", (req, res) => {
 
   const note = notes.find(note => note.id == id);
 
-  console.log(note)
-
   if (!note)
     return res.status(404).send({ erro: "Nota não encontrada" });
 
   notes.forEach(note => {
     if (note.id == id) {
       note.text = text;
+      note.urgent = !!urgent;
     }
   })
 
