@@ -8,6 +8,17 @@ function* generateId() {
 
 let idGenerator = generateId();
 
-const notes = [];
+const notes = [
+  {
+    id: idGenerator.next().value,
+    text: "Estudar JS Promises",
+    date: new Date()
+  },
+  {
+    id: idGenerator.next().value,
+    text: "Estudar hooks ReactJS",
+    date: new Date()
+  }
+];
 
 module.exports = { notes, idGenerator }
