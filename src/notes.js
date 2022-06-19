@@ -12,12 +12,14 @@ const notes = [
   {
     id: idGenerator.next().value,
     text: "Estudar JS Promises",
-    date: new Date()
+    date: new Date(),
+    userId: 1
   },
   {
     id: idGenerator.next().value,
     text: "Estudar hooks ReactJS",
-    date: new Date()
+    date: new Date(),
+    userId: 1
   }
 ];
 

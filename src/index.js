@@ -1,5 +1,8 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
 const app = express();
+const { secret } = require("./auth.json");
+const authMidd = require("./authMid");
 
 const cors = require("cors");
 
@@ -7,12 +10,62 @@ app.use(cors());
 app.use(express.json());
 
 const { notes, idGenerator } = require("./notes");
+const { users, idGeneratorUsers } = require("./users");
+
+app.post("/login", (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password)
+    return res.status(400).send({ erro: "Os campos username e password são obrigatórios" });
+
+  const user = users.find(user => user.username === username && user.password === password);
+
+  if (!user)
+    return res.status(401).send({ erro: "Nome de usuários e/ou senha inválidos" });
+
+  res.send({
+    token: jwt.sign({ userId: user.id, username }, secret)
+  });
+
+});
+
+
+app.post("/register", (req, res) => {
+  const { username, password } = req.body;
+
+  console.log(password)
+
+  if (!username || !password)
+    return res.status(400).send({ erro: "Os campos username e password são obrigatórios" });
+
+  const user = users.find(user => user.username === username);
+
+  if (user)
+    return res.status(400).send({ erro: "Usuário já existente" });
+
+  const id = idGeneratorUsers.next().value;
+
+  users.push({
+    id,
+    username,
+    password
+  });
+
+  res.status(200).send({
+    token: jwt.sign({ userId: id, username }, secret)
+  });
+});
+
+app.use(authMidd);
 
 app.get("/notes", (req, res) => {
-  res.send(notes);
+  const { userId } = req;
+
+  res.send(notes.filter(note => note.userId === userId));
 });
 
 app.get("/notes/:id", (req, res) => {
+  const { userId } = req;
   const { id } = req.params;
 
   if (!id)
@@ -20,13 +73,14 @@ app.get("/notes/:id", (req, res) => {
 
   const note = notes.find(note => note.id == id);
 
-  if (!note)
+  if (!note || note.userId !== userId)
     return res.status(404).send({ erro: "Nota não encontrada" });
 
   res.status(200).send(note);
 });
 
 app.post("/notes", (req, res) => {
+  const { userId } = req;
   const { text, urgent } = req.body;
 
   if (!text)
@@ -38,7 +92,8 @@ app.post("/notes", (req, res) => {
     id,
     date: new Date(),
     urgent,
-    text
+    text,
+    userId
   };
 
   notes.push(note);
@@ -48,13 +103,14 @@ app.post("/notes", (req, res) => {
 
 app.delete("/notes/:id", (req, res) => {
   const { id } = req.params;
+  const { userId } = req;
 
   if (!id)
     return res.send({ erro: "Id obrigatório" });
 
   const note = notes.find(note => note.id == id);
 
-  if (!note)
+  if (!note || note.userId !== userId)
     return res.status(404).send({ erro: "Nota não encontrada" });
 
   notes.splice(notes.indexOf(note), 1);
@@ -65,6 +121,7 @@ app.delete("/notes/:id", (req, res) => {
 app.put("/notes/:id", (req, res) => {
   const { id } = req.params;
   const { text, urgent } = req.body;
+  const { userId } = req;
 
   if (!text)
     return res.send({ erro: "O campo text é obrigatório" });
@@ -74,7 +131,7 @@ app.put("/notes/:id", (req, res) => {
 
   const note = notes.find(note => note.id == id);
 
-  if (!note)
+  if (!note || note.userId !== userId)
     return res.status(404).send({ erro: "Nota não encontrada" });
 
   notes.forEach(note => {
@@ -86,6 +143,9 @@ app.put("/notes/:id", (req, res) => {
 
   res.status(200).send();
 })
+
+
+
 
 const PORT = process.env.PORT || 3333;
 
