@@ -61,7 +61,9 @@ app.use(authMidd);
 app.get("/notes", (req, res) => {
   const { userId } = req;
 
-  res.send(notes.filter(note => note.userId === userId));
+  setTimeout(() => {
+    res.send(notes.filter(note => note.userId === userId));
+  }, 800);
 });
 
 app.get("/notes/:id", (req, res) => {
@@ -76,7 +78,9 @@ app.get("/notes/:id", (req, res) => {
   if (!note || note.userId !== userId)
     return res.status(404).send({ erro: "Nota não encontrada" });
 
-  res.status(200).send(note);
+  setTimeout(() => {
+    res.status(200).send(note);
+  }, 600);
 });
 
 app.post("/notes", (req, res) => {
@@ -98,7 +102,9 @@ app.post("/notes", (req, res) => {
 
   notes.push(note);
 
-  res.send(note);
+  setTimeout(() => {
+    res.send(note);
+  }, 800);
 })
 
 app.delete("/notes/:id", (req, res) => {
@@ -115,7 +121,10 @@ app.delete("/notes/:id", (req, res) => {
 
   notes.splice(notes.indexOf(note), 1);
 
-  res.status(204).send();
+  setTimeout(() => {
+    res.status(204).send();
+  }, 1000);
+
 });
 
 app.put("/notes/:id", (req, res) => {
@@ -141,7 +150,9 @@ app.put("/notes/:id", (req, res) => {
     }
   })
 
-  res.status(200).send();
+  setTimeout(() => {
+    res.status(200).send();
+  }, 800)
 })
 
 
