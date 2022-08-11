@@ -12,7 +12,8 @@ const notes = [
   {
     id: idGenerator.next().value,
     text: "Estudar JS Promises",
-    date: new Date()
+    date: new Date(),
+    urgent: true
   },
   {
     id: idGenerator.next().value,

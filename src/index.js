@@ -9,7 +9,9 @@ app.use(express.json());
 const { notes, idGenerator } = require("./notes");
 
 app.get("/notes", (req, res) => {
-  res.send(notes);
+  setTimeout(() => {
+    res.send(notes);
+  }, 1000);
 });
 
 app.get("/notes/:id", (req, res) => {
@@ -23,7 +25,9 @@ app.get("/notes/:id", (req, res) => {
   if (!note)
     return res.status(404).send({ erro: "Nota não encontrada" });
 
-  res.status(200).send(note);
+    setTimeout(() => {
+      res.status(200).send(note);
+    }, 1000);
 });
 
 app.post("/notes", (req, res) => {
@@ -42,8 +46,10 @@ app.post("/notes", (req, res) => {
   };
 
   notes.push(note);
-
-  res.send(note);
+  
+  setTimeout(() => {
+    res.send(note);
+  }, 800);
 })
 
 app.delete("/notes/:id", (req, res) => {
@@ -59,7 +65,9 @@ app.delete("/notes/:id", (req, res) => {
 
   notes.splice(notes.indexOf(note), 1);
 
-  res.status(204).send();
+  setTimeout(() => {
+    res.status(204).send();
+  }, 800);
 });
 
 app.put("/notes/:id", (req, res) => {
@@ -84,7 +92,9 @@ app.put("/notes/:id", (req, res) => {
     }
   })
 
-  res.status(200).send();
+  setTimeout(() => {
+    res.status(200).send();
+  }, 800);
 })
 
 const PORT = process.env.PORT || 3333;
