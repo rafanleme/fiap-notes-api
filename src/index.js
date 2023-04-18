@@ -63,7 +63,28 @@ app.get("/notes", (req, res) => {
 
   setTimeout(() => {
     res.send(notes.filter(note => note.userId === userId));
-  }, 800);
+  }, 1000);
+});
+
+app.get("/notes:paginated", (req, res) => {
+  const { userId } = req;
+  const { page = 1, pageSize = 10 } = req.query;
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = page * pageSize;
+
+  setTimeout(() => {
+    const filteredNotes = notes.filter(note => note.userId === userId);
+    const paginatedNotes = filteredNotes.slice(startIndex, endIndex);
+    const totalItems = filteredNotes.length;
+    const totalPages = Math.ceil(totalItems / pageSize);
+    const currentPage = page;
+    res.send({
+      currentPage,
+      totalPages,
+      totalItems,
+      notes: paginatedNotes,
+    });
+  }, 1000);
 });
 
 app.get("/notes/:id", (req, res) => {
